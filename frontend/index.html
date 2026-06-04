@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PizzaCode Studio 🍕</title>
+<style>
+  :root {
+    --navy:  #0D1B2A;
+    --blue:  #1B3A5C;
+    --teal:  #1A6B72;
+    --teal2: #22929A;
+    --gold:  #D4A017;
+    --red:   #C0392B;
+    --green: #2D6B4A;
+    --amber: #B5730A;
+    --bg:    #F4F7FA;
+    --white: #FFFFFF;
+    --slate: #4A6380;
+    --light: #E8F1F8;
+    --border:#C5D5E8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background:var(--bg); color:var(--navy); }
+
+  /* NAV */
+  nav { background:var(--navy); padding:0 24px; display:flex; align-items:center; justify-content:space-between; height:58px; position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,.3); }
+  .nav-brand { color:#fff; font-size:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .nav-brand span { color:var(--gold); }
+  .nav-links { display:flex; gap:4px; }
+  .nav-btn { background:none; border:none; color:#8AAFCC; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:13px; transition:.2s; }
+  .nav-btn:hover, .nav-btn.active { background:var(--blue); color:#fff; }
+  .nav-badge { background:var(--red); color:#fff; border-radius:10px; padding:1px 6px; font-size:10px; margin-left:4px; }
+
+  /* VIEWS */
+  .view { display:none; padding:24px; max-width:1200px; margin:0 auto; }
+  .view.active { display:block; }
+
+  /* LOGIN */
+  #v-login { display:flex; align-items:center; justify-content:center; min-height:calc(100vh - 58px); }
+  .login-card { background:var(--white); border-radius:16px; padding:48px 40px; width:400px; box-shadow:0 8px 40px rgba(0,0,0,.12); }
+  .login-card h2 { font-size:26px; margin-bottom:6px; }
+  .login-card p  { color:var(--slate); margin-bottom:28px; font-size:14px; }
+  .login-hint { background:var(--light); border-radius:8px; padding:12px; margin-bottom:20px; font-size:12px; color:var(--slate); line-height:1.7; }
+
+  /* FORMS */
+  label { display:block; font-size:12px; font-weight:600; color:var(--slate); margin-bottom:4px; text-transform:uppercase; letter-spacing:.5px; }
+  input, select { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:14px; margin-bottom:16px; outline:none; transition:.2s; }
+  input:focus, select:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(26,107,114,.15); }
+
+  /* BUTTONS */
+  .btn { padding:10px 20px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:.2s; }
+  .btn-primary   { background:var(--teal);  color:#fff; }
+  .btn-primary:hover  { background:var(--teal2); }
+  .btn-secondary { background:var(--light); color:var(--navy); }
+  .btn-secondary:hover{ background:var(--border); }
+  .btn-danger    { background:var(--red);   color:#fff; }
+  .btn-gold      { background:var(--gold);  color:#fff; }
+  .btn-sm { padding:6px 12px; font-size:12px; }
+  .btn-full { width:100%; padding:12px; font-size:15px; }
+
+  /* CARDS */
+  .card { background:var(--white); border-radius:12px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid var(--border); }
+
+  /* GRID */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom:24px; }
+  .page-header h1 { font-size:26px; font-weight:700; }
+  .page-header p  { color:var(--slate); font-size:14px; margin-top:4px; }
+
+  /* STAT CARDS */
+  .stat-card { background:var(--white); border-radius:12px; padding:20px; border-left:4px solid var(--teal); box-shadow:0 2px 12px rgba(0,0,0,.07); }
+  .stat-card.gold  { border-color:var(--gold); }
+  .stat-card.red   { border-color:var(--red); }
+  .stat-card.blue  { border-color:var(--blue); }
+  .stat-val  { font-size:32px; font-weight:700; color:var(--navy); }
+  .stat-label{ font-size:12px; color:var(--slate); margin-top:4px; }
+
+  /* MENU GRID */
+  .menu-filters { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .filter-btn { padding:7px 16px; border-radius:20px; border:1px solid var(--border); background:var(--white); cursor:pointer; font-size:13px; transition:.2s; }
+  .filter-btn.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .menu-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+  .menu-item { background:var(--white); border-radius:12px; padding:18px; border:1px solid var(--border); transition:.2s; cursor:pointer; }
+  .menu-item:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.1); }
+  .menu-item.unavailable { opacity:.5; pointer-events:none; }
+  .item-emoji { font-size:40px; margin-bottom:10px; }
+  .item-name  { font-size:15px; font-weight:700; margin-bottom:4px; }
+  .item-desc  { font-size:12px; color:var(--slate); margin-bottom:12px; }
+  .item-footer { display:flex; align-items:center; justify-content:space-between; }
+  .item-price { font-size:16px; font-weight:700; color:var(--teal); }
+  .item-add   { width:32px; height:32px; border-radius:50%; border:none; background:var(--navy); color:#fff; font-size:18px; cursor:pointer; transition:.2s; }
+  .item-add:hover { background:var(--teal); }
+
+  /* CART */
+  .cart-sidebar { position:fixed; right:0; top:58px; width:340px; height:calc(100vh - 58px); background:var(--white); border-left:1px solid var(--border); display:flex; flex-direction:column; transform:translateX(100%); transition:.3s; z-index:90; box-shadow:-4px 0 20px rgba(0,0,0,.1); }
+  .cart-sidebar.open { transform:translateX(0); }
+  .cart-header { padding:20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .cart-header h3 { font-size:18px; }
+  .cart-items { flex:1; overflow-y:auto; padding:16px; }
+  .cart-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--bg); }
+  .cart-item-info { flex:1; }
+  .cart-item-name  { font-size:13px; font-weight:600; }
+  .cart-item-price { font-size:12px; color:var(--slate); }
+  .cart-qty { display:flex; align-items:center; gap:8px; }
+  .qty-btn { width:26px; height:26px; border-radius:50%; border:1px solid var(--border); background:var(--bg); cursor:pointer; font-size:14px; }
+  .cart-footer { padding:16px; border-top:1px solid var(--border); }
+  .cart-total { font-size:18px; font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; }
+  .cart-empty { text-align:center; padding:40px 20px; color:var(--slate); }
+  .cart-empty .icon { font-size:48px; margin-bottom:12px; }
+
+  /* CHECKOUT MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--white); border-radius:16px; padding:32px; width:480px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+  .modal h2 { font-size:22px; margin-bottom:20px; }
+
+  /* ORDERS / KITCHEN */
+  .orders-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+  .order-card { background:var(--white); border-radius:12px; padding:18px; border:1px solid var(--border); border-top:4px solid var(--slate); }
+  .order-card.nuevo      { border-top-color:var(--blue); }
+  .order-card.en_cocina  { border-top-color:var(--amber); }
+  .order-card.listo      { border-top-color:var(--green); }
+  .order-card.en_camino  { border-top-color:var(--teal); }
+  .order-card.entregado  { border-top-color:#aaa; }
+  .order-id   { font-size:11px; color:var(--slate); }
+  .order-name { font-size:16px; font-weight:700; margin:4px 0; }
+  .order-addr { font-size:12px; color:var(--slate); margin-bottom:8px; }
+  .order-items-list { font-size:12px; color:var(--slate); margin-bottom:8px; }
+  .order-total { font-size:15px; font-weight:700; color:var(--teal); margin-bottom:12px; }
+  .order-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+  /* STATUS BADGE */
+  .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; }
+  .badge-nuevo     { background:#DBEAFE; color:#1E40AF; }
+  .badge-en_cocina { background:#FEF3C7; color:#92400E; }
+  .badge-listo     { background:#D1FAE5; color:#065F46; }
+  .badge-en_camino { background:#E0F2FE; color:#075985; }
+  .badge-entregado { background:#F3F4F6; color:#4B5563; }
+  .badge-cancelado { background:#FEE2E2; color:#991B1B; }
+
+  /* TABLES */
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { background:var(--navy); color:var(--gold); padding:10px 14px; text-align:left; font-size:11px; letter-spacing:.8px; }
+  td { padding:10px 14px; border-bottom:1px solid var(--bg); }
+  tr:hover td { background:var(--light); }
+  .stock-ok  { color:var(--green); font-weight:600; }
+  .stock-low { color:var(--amber); font-weight:600; }
+  .stock-out { color:var(--red);   font-weight:600; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:24px; right:24px; background:var(--navy); color:#fff; padding:12px 20px; border-radius:10px; font-size:14px; z-index:999; transform:translateY(80px); opacity:0; transition:.3s; pointer-events:none; }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast.success { border-left:4px solid var(--green); }
+  .toast.error   { border-left:4px solid var(--red); }
+
+  /* TRACKING */
+  .tracking-bar { display:flex; justify-content:space-between; position:relative; margin:20px 0 8px; }
+  .tracking-bar::before { content:''; position:absolute; top:14px; left:0; right:0; height:3px; background:var(--border); z-index:0; }
+  .track-step { text-align:center; flex:1; position:relative; z-index:1; }
+  .track-dot  { width:28px; height:28px; border-radius:50%; background:var(--border); margin:0 auto 6px; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .track-dot.done { background:var(--green); color:#fff; }
+  .track-dot.active { background:var(--teal); color:#fff; box-shadow:0 0 0 4px rgba(26,107,114,.25); }
+  .track-label { font-size:10px; color:var(--slate); }
+
+  /* UTILITY */
+  .section-title { font-size:18px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .mt-16 { margin-top:16px; }
+  .mt-24 { margin-top:24px; }
+  .flex-between { display:flex; justify-content:space-between; align-items:center; }
+  .gap-8 { gap:8px; }
+  .text-sm { font-size:13px; }
+  .text-muted { color:var(--slate); }
+  .alert-banner { background:#FEF3C7; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; font-size:13px; color:#92400E; margin-bottom:16px; }
+
+  @media(max-width:768px) {
+    .grid-4 { grid-template-columns:1fr 1fr; }
+    .cart-sidebar { width:100%; }
+    nav { padding:0 12px; }
+    .nav-btn span { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">🍕 Pizza<span>Code</span></div>
+  <div class="nav-links" id="navLinks">
+    <button class="nav-btn active" onclick="goTo('menu')" id="nb-menu">🍕 <span>Menú</span></button>
+    <button class="nav-btn" onclick="goTo('orders')" id="nb-orders">📦 <span>Mis Pedidos</span></button>
+    <button class="nav-btn" onclick="goTo('kitchen')" id="nb-kitchen" style="display:none">🧑‍🍳 <span>Cocina</span></button>
+    <button class="nav-btn" onclick="goTo('dashboard')" id="nb-dashboard" style="display:none">📊 <span>Dashboard</span></button>
+    <button class="nav-btn" onclick="goTo('inventory')" id="nb-inventory" style="display:none">📦 <span>Inventario</span></button>
+    <button class="nav-btn" onclick="toggleCart()" id="nb-cart" style="display:none">🛒 <span>Carrito</span><span class="nav-badge" id="cartBadge">0</span></button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span id="userLabel" style="color:#8AAFCC;font-size:13px"></span>
+    <button class="btn btn-secondary btn-sm" onclick="logout()" id="logoutBtn" style="display:none">Salir</button>
+    <button class="btn btn-primary btn-sm" onclick="goTo('login')" id="loginBtn">Iniciar sesión</button>
+  </div>
+</nav>
+
+<!-- VIEWS ─────────────────────────────────────── -->
+
+<!-- LOGIN -->
+<div id="v-login" class="view active">
+  <div class="login-card">
+    <h2>Bienvenido 👋</h2>
+    <p>Inicia sesión en PizzaCode Studio</p>
+    <div class="login-hint">
+      <strong>Cuentas de prueba:</strong><br>
+      🧑‍💼 admin@pizzacode.com / admin123<br>
+      🧑‍🍳 chef@pizzacode.com / chef123<br>
+      👤 cliente@test.com / pass123
+    </div>
+    <label>Correo electrónico</label>
+    <input type="email" id="loginEmail" placeholder="correo@ejemplo.com" value="admin@pizzacode.com">
+    <label>Contraseña</label>
+    <input type="password" id="loginPass" placeholder="••••••••" value="admin123">
+    <div id="loginError" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none"></div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Iniciar sesión →</button>
+  </div>
+</div>
+
+<!-- MENÚ -->
+<div id="v-menu" class="view">
+  <div class="page-header flex-between">
+    <div><h1>Nuestro Menú 🍕</h1><p>Elige tus pizzas favoritas</p></div>
+  </div>
+  <div class="menu-filters">
+    <button class="filter-btn active" onclick="filterMenu('all', this)">Todos</button>
+    <button class="filter-btn" onclick="filterMenu('pizza', this)">🍕 Pizzas</button>
+    <button class="filter-btn" onclick="filterMenu('bebida', this)">🥤 Bebidas</button>
+    <button class="filter-btn" onclick="filterMenu('postre', this)">🍰 Postres</button>
+  </div>
+  <div class="menu-grid" id="menuGrid"></div>
+</div>
+
+<!-- MIS PEDIDOS (cliente) -->
+<div id="v-orders" class="view">
+  <div class="page-header"><h1>Mis Pedidos 📦</h1><p>Seguimiento en tiempo real</p></div>
+  <div id="myOrders"></div>
+</div>
+
+<!-- COCINA (chef/admin) -->
+<div id="v-kitchen" class="view">
+  <div class="page-header flex-between">
+    <div><h1>Panel de Cocina 🧑‍🍳</h1><p>Gestión de pedidos activos</p></div>
+    <button class="btn btn-secondary" onclick="loadKitchen()">↻ Actualizar</button>
+  </div>
+  <div id="kitchenAlerts"></div>
+  <div class="orders-grid" id="kitchenOrders"></div>
+  <p id="kitchenEmpty" style="display:none;color:var(--slate);text-align:center;padding:40px">No hay pedidos activos 🎉</p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="v-dashboard" class="view">
+  <div class="page-header"><h1>Dashboard 📊</h1><p>Métricas del día</p></div>
+  <div class="grid-4" id="dashStats"></div>
+  <div class="grid-2 mt-24">
+    <div class="card">
+      <div class="section-title">📋 Últimos Pedidos</div>
+      <div id="dashOrders"></div>
+    </div>
+    <div class="card">
+      <div class="section-title">⚠️ Alertas de Inventario</div>
+      <div id="dashInventory"></div>
+    </div>
+  </div>
+</div>
+
+<!-- INVENTARIO -->
+<div id="v-inventory" class="view">
+  <div class="page-header"><h1>Inventario 📦</h1><p>Stock de ingredientes</p></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>INGREDIENTE</th><th>STOCK</th><th>UNIDAD</th><th>STOCK MÍNIMO</th><th>ESTADO</th></tr></thead>
+      <tbody id="inventoryTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CARRITO SIDEBAR -->
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>🛒 Tu Pedido</h3>
+    <button class="btn btn-secondary btn-sm" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Total:</span><span id="cartTotal">$0</span></div>
+    <button class="btn btn-primary btn-full" onclick="openCheckout()">Confirmar pedido →</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal">
+    <h2>📋 Confirmar Pedido</h2>
+    <label>Nombre completo</label>
+    <input type="text" id="chkName" placeholder="Tu nombre">
+    <label>Dirección de entrega</label>
+    <input type="text" id="chkAddr" placeholder="Calle, número, barrio, ciudad">
+    <label>Método de pago</label>
+    <select id="chkPay">
+      <option value="tarjeta">💳 Tarjeta de crédito/débito</option>
+      <option value="efectivo">💵 Efectivo</option>
+      <option value="transferencia">🏦 Transferencia bancaria</option>
+    </select>
+    <div id="chkSummary" style="background:var(--bg);border-radius:8px;padding:14px;margin-bottom:16px;font-size:13px;"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeCheckout()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="submitOrder()">✅ Hacer Pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ────────────────────────────────────── SCRIPT ── -->
+<script>
+const API = 'http://localhost:3001/api';
+
+// ── STATE ────────────────────────────────────
+let state = {
+  user: null,
+  token: null,
+  cart: [],
+  menu: [],
+  orders: [],
+};
+
+// ── API HELPERS ──────────────────────────────
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
+  try {
+    const res = await fetch(API + path, { headers, ...opts });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+    return data;
+  } catch(e) {
+    // If backend offline, use mock fallback
+    return mockFallback(path, opts, e);
+  }
+}
+
+// Mock fallback (si el backend no está corriendo)
+function mockFallback(path, opts, originalErr) {
+  const body = opts.body ? JSON.parse(opts.body) : {};
+  if (path === '/auth/login') {
+    const users = [
+      { id:1, email:'admin@pizzacode.com',  password:'admin123',  role:'admin',  name:'Carlos Rodríguez' },
+      { id:2, email:'chef@pizzacode.com',   password:'chef123',   role:'chef',   name:'Ana Martínez' },
+      { id:3, email:'cliente@test.com',     password:'pass123',   role:'cliente',name:'Juan García' },
+    ];
+    const u = users.find(x => x.email===body.email && x.password===body.password);
+    if (!u) throw new Error('Credenciales incorrectas');
+    const { password:_, ...safe } = u;
+    return { token: `mock-${u.id}`, user: safe };
+  }
+  if (path === '/menu' || path.startsWith('/menu?')) {
+    return { items: MOCK_MENU, total: MOCK_MENU.length };
+  }
+  if (path === '/pedidos' && (!opts.method || opts.method==='GET')) {
+    return { pedidos: state.orders, total: state.orders.length };
+  }
+  if (path === '/pedidos' && opts.method==='POST') {
+    const total = body.items.reduce((s,i) => {
+      const m = MOCK_MENU.find(x=>x.id===i.menuItemId);
+      return s + (m ? m.price*i.quantity : 0);
+    }, 0);
+    const o = { ...body, id: 1000 + state.orders.length + 1, status:'nuevo', total, createdAt: new Date().toISOString() };
+    state.orders.push(o);
+    return o;
+  }
+  if (path.includes('/status')) {
+    const id = parseInt(path.split('/')[2]);
+    const o = state.orders.find(x=>x.id===id);
+    if (o) { o.status = body.status; return o; }
+  }
+  if (path === '/inventario') return { inventory: MOCK_INV, alerts: MOCK_INV.filter(i=>i.status!=='ok'), totalAlerts: 2 };
+  if (path === '/dashboard') {
+    return { today:{ orders:state.orders.length, revenue: state.orders.reduce((s,o)=>s+o.total,0), avgTicket:45000 }, statusCounts:{}, inventoryAlerts:2, totalOrders:state.orders.length };
+  }
+  if (path === '/health') return { status:'ok (mock)', timestamp: new Date().toISOString() };
+  return {};
+}
+
+const MOCK_MENU = [
+  { id:1, name:"Margarita Clásica",    category:"pizza",  price:28000, description:"Salsa de tomate, mozzarella fresca, albahaca", available:true,  image:"🍕" },
+  { id:2, name:"Pepperoni Lovers",     category:"pizza",  price:35000, description:"Doble pepperoni, mozzarella, salsa especial",  available:true,  image:"🍕" },
+  { id:3, name:"Hawaiana",             category:"pizza",  price:32000, description:"Jamón, piña, mozzarella, salsa de tomate",    available:true,  image:"🍕" },
+  { id:4, name:"Cuatro Quesos",        category:"pizza",  price:38000, description:"Mozzarella, cheddar, parmesano, gorgonzola",  available:true,  image:"🍕" },
+  { id:5, name:"BBQ Chicken",          category:"pizza",  price:36000, description:"Pollo a la BBQ, cebolla, mozzarella",         available:true,  image:"🍕" },
+  { id:6, name:"Veggie Supreme",       category:"pizza",  price:30000, description:"Pimentón, champiñones, aceitunas, cebolla",   available:true,  image:"🍕" },
+  { id:7, name:"Coca-Cola 500ml",      category:"bebida", price:5000,  description:"Bebida gaseosa fría",                        available:true,  image:"🥤" },
+  { id:8, name:"Agua Mineral 500ml",   category:"bebida", price:3000,  description:"Agua sin gas",                               available:true,  image:"💧" },
+  { id:9, name:"Brownie de Chocolate", category:"postre", price:12000, description:"Brownie caliente con helado de vainilla",    available:true,  image:"🍫" },
+  { id:10,name:"Tiramisú",             category:"postre", price:14000, description:"Clásico tiramisú italiano",                  available:false, image:"🍰" },
+];
+const MOCK_INV = [
+  { ingredient:"Masa de pizza",   stock:45, unit:"unidades", minStock:10, status:"ok" },
+  { ingredient:"Salsa de tomate", stock:8,  unit:"litros",   minStock:5,  status:"ok" },
+  { ingredient:"Mozzarella",      stock:3,  unit:"kg",       minStock:5,  status:"low" },
+  { ingredient:"Pepperoni",       stock:12, unit:"paquetes", minStock:5,  status:"ok" },
+  { ingredient:"Jamón",           stock:6,  unit:"kg",       minStock:3,  status:"ok" },
+  { ingredient:"Piña en conserva",stock:0,  unit:"latas",    minStock:4,  status:"out" },
+];
+
+// ── NAVIGATION ───────────────────────────────
+function goTo(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('v-' + view);
+  const nb = document.getElementById('nb-' + view);
+  if (el) el.classList.add('active');
+  if (nb) nb.classList.add('active');
+  if (view === 'menu')      loadMenu();
+  if (view === 'orders')    loadMyOrders();
+  if (view === 'kitchen')   loadKitchen();
+  if (view === 'dashboard') loadDashboard();
+  if (view === 'inventory') loadInventory();
+  closeCart();
+}
+
+// ── AUTH ─────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  try {
+    const data = await api('/auth/login', { method:'POST', body: JSON.stringify({ email, password: pass }) });
+    state.user  = data.user;
+    state.token = data.token;
+    updateNav();
+    goTo('menu');
+    toast(`Bienvenido, ${data.user.name} 👋`, 'success');
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+function logout() {
+  state = { user:null, token:null, cart:[], menu:[], orders:[] };
+  updateNav();
+  goTo('login');
+}
+
+function updateNav() {
+  const u = state.user;
+  const loggedIn = !!u;
+  document.getElementById('loginBtn').style.display  = loggedIn ? 'none' : '';
+  document.getElementById('logoutBtn').style.display = loggedIn ? '' : 'none';
+  document.getElementById('userLabel').textContent   = loggedIn ? `${u.name} (${u.role})` : '';
+  document.getElementById('nb-cart').style.display   = loggedIn && u.role === 'cliente' ? '' : 'none';
+  document.getElementById('nb-orders').style.display = loggedIn ? '' : 'none';
+  const isStaff = loggedIn && (u.role === 'admin' || u.role === 'chef');
+  document.getElementById('nb-kitchen').style.display   = isStaff ? '' : 'none';
+  document.getElementById('nb-dashboard').style.display = isStaff ? '' : 'none';
+  document.getElementById('nb-inventory').style.display = isStaff ? '' : 'none';
+}
+
+// ── MENU ─────────────────────────────────────
+async function loadMenu() {
+  const data = await api('/menu');
+  state.menu = data.items || [];
+  renderMenu(state.menu);
+}
+
+function filterMenu(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const items = cat === 'all' ? state.menu : state.menu.filter(i => i.category === cat);
+  renderMenu(items);
+}
+
+function renderMenu(items) {
+  const grid = document.getElementById('menuGrid');
+  grid.innerHTML = items.map(item => `
+    <div class="menu-item ${!item.available ? 'unavailable' : ''}">
+      <div class="item-emoji">${item.image}</div>
+      <div class="item-name">${item.name}</div>
+      <div class="item-desc">${item.description}</div>
+      <div class="item-footer">
+        <span class="item-price">${fmt(item.price)}</span>
+        ${item.available
+          ? `<button class="item-add" onclick="addToCart(${item.id})">+</button>`
+          : `<span style="font-size:11px;color:var(--red)">No disponible</span>`}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── CART ─────────────────────────────────────
+function addToCart(itemId) {
+  if (!state.user) { toast('Inicia sesión para hacer un pedido', 'error'); return; }
+  const item = state.menu.find(i => i.id === itemId);
+  if (!item) return;
+  const existing = state.cart.find(c => c.menuItemId === itemId);
+  if (existing) {
+    existing.quantity++;
+  } else {
+    state.cart.push({ menuItemId: itemId, quantity: 1, name: item.name, price: item.price });
+  }
+  updateCartBadge();
+  renderCart();
+  openCart();
+  toast(`${item.name} agregado al carrito 🛒`, 'success');
+}
+
+function updateCartBadge() {
+  const total = state.cart.reduce((s, i) => s + i.quantity, 0);
+  document.getElementById('cartBadge').textContent = total;
+}
+
+function renderCart() {
+  const container = document.getElementById('cartItems');
+  if (state.cart.length === 0) {
+    container.innerHTML = `<div class="cart-empty"><div class="icon">🛒</div><p>Tu carrito está vacío</p></div>`;
+    document.getElementById('cartTotal').textContent = '$0';
+    return;
+  }
+  container.innerHTML = state.cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">${fmt(item.price)} c/u</div>
+      </div>
+      <div class="cart-qty">
+        <button class="qty-btn" onclick="changeQty(${item.menuItemId}, -1)">−</button>
+        <span>${item.quantity}</span>
+        <button class="qty-btn" onclick="changeQty(${item.menuItemId}, 1)">+</button>
+      </div>
+    </div>
+  `).join('');
+  const total = state.cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  document.getElementById('cartTotal').textContent = fmt(total);
+}
+
+function changeQty(itemId, delta) {
+  const item = state.cart.find(c => c.menuItemId === itemId);
+  if (!item) return;
+  item.quantity += delta;
+  if (item.quantity <= 0) state.cart = state.cart.filter(c => c.menuItemId !== itemId);
+  updateCartBadge();
+  renderCart();
+}
+
+function toggleCart() { document.getElementById('cartSidebar').classList.toggle('open'); }
+function openCart()   { document.getElementById('cartSidebar').classList.add('open'); }
+function closeCart()  { document.getElementById('cartSidebar').classList.remove('open'); }
+
+// ── CHECKOUT ─────────────────────────────────
+function openCheckout() {
+  if (state.cart.length === 0) { toast('Tu carrito está vacío', 'error'); return; }
+  const total = state.cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  document.getElementById('chkSummary').innerHTML = `
+    <strong>Resumen del pedido:</strong><br>
+    ${state.cart.map(i => `${i.quantity}× ${i.name} — ${fmt(i.price * i.quantity)}`).join('<br>')}
+    <hr style="margin:8px 0;border-color:var(--border)">
+    <strong>Total: ${fmt(total)}</strong>
+  `;
+  document.getElementById('checkoutModal').classList.add('open');
+  closeCart();
+}
+function closeCheckout() { document.getElementById('checkoutModal').classList.remove('open'); }
+
+async function submitOrder() {
+  const name = document.getElementById('chkName').value.trim();
+  const addr = document.getElementById('chkAddr').value.trim();
+  const pay  = document.getElementById('chkPay').value;
+  if (!addr) { toast('Ingresa tu dirección de entrega', 'error'); return; }
+  try {
+    const order = await api('/pedidos', {
+      method: 'POST',
+      body: JSON.stringify({
+        items: state.cart.map(i => ({ menuItemId: i.menuItemId, quantity: i.quantity })),
+        address: addr,
+        customerName: name || state.user?.name || 'Cliente',
+        paymentMethod: pay,
+      }),
+    });
+    state.cart = [];
+    updateCartBadge();
+    renderCart();
+    closeCheckout();
+    toast(`✅ Pedido #${order.id} confirmado! Tiempo estimado: 30 min`, 'success');
+    goTo('orders');
+  } catch(e) {
+    toast(e.message, 'error');
+  }
+}
+
+// ── MY ORDERS ────────────────────────────────
+const STATUS_LABELS = { nuevo:'Nuevo', en_cocina:'En cocina', listo:'Listo', en_camino:'En camino', entregado:'Entregado', cancelado:'Cancelado' };
+const STATUS_STEPS  = ['nuevo','en_cocina','listo','en_camino','entregado'];
+const STATUS_ICONS  = { nuevo:'📝', en_cocina:'🍳', listo:'✅', en_camino:'🛵', entregado:'🏠' };
+
+async function loadMyOrders() {
+  const data = await api('/pedidos');
+  const container = document.getElementById('myOrders');
+  const orders = data.pedidos || [];
+  if (orders.length === 0) {
+    container.innerHTML = `<div class="card" style="text-align:center;padding:40px;color:var(--slate)">
+      <div style="font-size:48px;margin-bottom:12px">📭</div>
+      <p>No tienes pedidos aún. ¡Haz tu primer pedido!</p>
+      <button class="btn btn-primary mt-16" onclick="goTo('menu')">Ver Menú →</button>
+    </div>`;
+    return;
+  }
+  container.innerHTML = orders.slice().reverse().map(o => {
+    const stepIdx = STATUS_STEPS.indexOf(o.status);
+    const tracking = STATUS_STEPS.map((st, i) => `
+      <div class="track-step">
+        <div class="track-dot ${i < stepIdx ? 'done' : i === stepIdx ? 'active' : ''}">${i <= stepIdx ? '✓' : STATUS_ICONS[st]}</div>
+        <div class="track-label">${STATUS_LABELS[st]}</div>
+      </div>`).join('');
+    return `<div class="card mt-16">
+      <div class="flex-between">
+        <div><strong>Pedido #${o.id}</strong> <span class="badge badge-${o.status}">${STATUS_LABELS[o.status]||o.status}</span></div>
+        <span class="text-muted text-sm">${new Date(o.createdAt).toLocaleString('es-CO')}</span>
+      </div>
+      <p class="text-sm text-muted mt-16">📍 ${o.address}</p>
+      <div class="tracking-bar">${tracking}</div>
+      <div style="font-size:13px;color:var(--slate);margin-top:8px">Total: <strong style="color:var(--teal)">${fmt(o.total)}</strong></div>
+    </div>`;
+  }).join('');
+}
+
+// ── KITCHEN ──────────────────────────────────
+async function loadKitchen() {
+  const data = await api('/pedidos');
+  const orders = (data.pedidos || []).filter(o => !['entregado','cancelado'].includes(o.status));
+  const container = document.getElementById('kitchenOrders');
+  const empty = document.getElementById('kitchenEmpty');
+  const inv = await api('/inventario');
+  const alertsEl = document.getElementById('kitchenAlerts');
+  alertsEl.innerHTML = inv.alerts && inv.alerts.length > 0
+    ? `<div class="alert-banner">⚠️ Alerta de inventario: ${inv.alerts.map(a=>`${a.ingredient} (${a.status==='out'?'Sin stock':'Stock bajo'})`).join(' · ')}</div>`
+    : '';
+
+  if (orders.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  const nextStatus = { nuevo:'en_cocina', en_cocina:'listo', listo:'en_camino', en_camino:'entregado' };
+  const nextLabel  = { nuevo:'Iniciar cocción 🍳', en_cocina:'Marcar listo ✅', listo:'Despachar 🛵', en_camino:'Marcar entregado 🏠' };
+
+  container.innerHTML = orders.map(o => `
+    <div class="order-card ${o.status}" id="oc-${o.id}">
+      <div class="order-id">#${o.id} · ${new Date(o.createdAt).toLocaleTimeString('es-CO')}</div>
+      <div class="order-name">${o.customerName || 'Cliente'}</div>
+      <div class="order-addr">📍 ${o.address}</div>
+      <div class="order-items-list">Items: ${o.items.map(i=>`${i.quantity}×${MOCK_MENU.find(m=>m.id===i.menuItemId)?.name||i.menuItemId}`).join(', ')}</div>
+      <div class="order-total">${fmt(o.total)} · ${o.paymentMethod||'efectivo'}</div>
+      <span class="badge badge-${o.status}">${STATUS_LABELS[o.status]}</span>
+      <div class="order-actions mt-16">
+        ${nextStatus[o.status] ? `<button class="btn btn-primary btn-sm" onclick="advanceOrder(${o.id},'${nextStatus[o.status]}')">${nextLabel[o.status]}</button>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="advanceOrder(${o.id},'cancelado')">Cancelar</button>
+      </div>
+    </div>`).join('');
+}
+
+async function advanceOrder(id, status) {
+  try {
+    await api(`/pedidos/${id}/status`, { method:'PATCH', body: JSON.stringify({ status }) });
+    toast(`Pedido #${id} → ${STATUS_LABELS[status]}`, 'success');
+    loadKitchen();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── DASHBOARD ────────────────────────────────
+async function loadDashboard() {
+  const data = await api('/dashboard');
+  document.getElementById('dashStats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${data.today.orders}</div><div class="stat-label">Pedidos hoy</div></div>
+    <div class="stat-card gold"><div class="stat-val">${fmt(data.today.revenue)}</div><div class="stat-label">Ingresos hoy</div></div>
+    <div class="stat-card blue"><div class="stat-val">${fmt(data.today.avgTicket)}</div><div class="stat-label">Ticket promedio</div></div>
+    <div class="stat-card red"><div class="stat-val">${data.inventoryAlerts}</div><div class="stat-label">Alertas inventario</div></div>
+  `;
+  const orders = await api('/pedidos');
+  document.getElementById('dashOrders').innerHTML = (orders.pedidos||[]).slice(-5).reverse().map(o =>
+    `<div style="padding:8px 0;border-bottom:1px solid var(--bg);font-size:13px;display:flex;justify-content:space-between">
+      <span>#${o.id} — ${o.customerName||'Cliente'}</span>
+      <span class="badge badge-${o.status}">${STATUS_LABELS[o.status]}</span>
+    </div>`).join('') || '<p style="color:var(--slate);font-size:13px">Sin pedidos aún</p>';
+
+  const inv = await api('/inventario');
+  document.getElementById('dashInventory').innerHTML = (inv.alerts||[]).map(a =>
+    `<div style="padding:8px;background:${a.status==='out'?'#FEE2E2':'#FEF3C7'};border-radius:6px;margin-bottom:6px;font-size:13px">
+      ${a.status==='out'?'❌':'⚠️'} <strong>${a.ingredient}</strong>: ${a.stock} ${a.unit} (mín: ${a.minStock})
+    </div>`).join('') || '<p style="color:var(--green);font-size:13px">✅ Inventario en orden</p>';
+}
+
+// ── INVENTORY ────────────────────────────────
+async function loadInventory() {
+  const data = await api('/inventario');
+  const tbody = document.getElementById('inventoryTable');
+  tbody.innerHTML = (data.inventory||[]).map(i => `
+    <tr>
+      <td>${i.ingredient}</td>
+      <td>${i.stock}</td>
+      <td>${i.unit}</td>
+      <td>${i.minStock}</td>
+      <td class="stock-${i.status}">${i.status==='ok'?'✅ OK':i.status==='low'?'⚠️ Bajo':'❌ Sin stock'}</td>
+    </tr>`).join('');
+}
+
+// ── UTILS ─────────────────────────────────────
+function fmt(n) { return new Intl.NumberFormat('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 }).format(n||0); }
+
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── INIT ──────────────────────────────────────
+updateNav();
+loadMenu();
+</script>
+</body>
+</html>
