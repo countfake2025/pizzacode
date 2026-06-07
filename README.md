@@ -1,4 +1,4 @@
-# 🍕 PizzaCode Studio
+# 🍕 PizzaCode
 
 > Sistema de pedidos online para restaurante de pizzas — Ingeniería de Software
 ---
